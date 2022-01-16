@@ -1,0 +1,5 @@
+package jsonfile
+
+func DoNothing() {
+
+}

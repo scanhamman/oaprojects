@@ -1,0 +1,59 @@
+[
+{
+    "code":"2S07RR007156-12",
+    "funding":[
+        {"funding_stream":
+            {
+                "description":"NATIONAL CENTER FOR RESEARCH RESOURCES",
+                "id":"NIH::NATIONAL_CENTER_FOR_RESEARCH_RESOURCES"},
+                "jurisdiction":"US",
+                "name":"National Institutes of Health",
+                "shortName":"NIH"
+            }
+    ],
+    "h2020programme":[],
+    "id":"40|nih_________::c5657f51170208edca705b5e6c16d87b",
+    "openaccessmandatefordataset":false,
+    "openaccessmandateforpublications":false,
+    "subject":[],
+    "title":"EMBRYO BIOCHEMISTRY &NEUROLOGICAL STUDIES INVOLVING MICE"
+},
+{
+    "code":"5R44AR038993-03",
+    "enddate":"1992-01-31",
+    "funding":[
+        {"funding_stream":
+              {
+                "description":"NATIONAL INSTITUTE OF ARTHRITIS AND MUSCULOSKELETAL AND SKIN DISEASES",
+                "id":"NIH::NATIONAL_INSTITUTE_OF_ARTHRITIS_AND_MUSCULOSKELETAL_AND_SKIN_DISEASES"},
+                "jurisdiction":"US",
+                "name":"National Institutes of Health",
+                "shortName":"NIH"
+            }
+    ],
+    "h2020programme":[],
+    "id":"40|nih_________::c863e711c723ef8b5ae4a89d5fc53d41",
+    "openaccessmandatefordataset":false,
+    "openaccessmandateforpublications":false,
+    "startdate":"1989-09-30","subject":[],"title":"AN INJECTABLE COLLAGEN MATRIX FOR SOFT TISSUE REPAIR"
+},
+{
+    "code":"2R01GM045804-04",
+    "enddate":"1998-03-31",
+    "funding":[
+        {"funding_stream":
+            {
+                "description":"NATIONAL INSTITUTE OF GENERAL MEDICAL SCIENCES",
+                "id":"NIH::NATIONAL_INSTITUTE_OF_GENERAL_MEDICAL_SCIENCES"},
+                "jurisdiction":"US",
+                "name":"National Institutes of Health",
+                "shortName":"NIH"
+                }
+    ],
+    "h2020programme":[],
+    "id":"40|nih_________::ca22251cb0bd706172892e921d8db807",
+    "openaccessmandatefordataset":false,
+    "openaccessmandateforpublications":false,
+    "startdate":"1991-04-01","subject":[],"title":"STRUCTURE AND MECHANISM OF DNA INTERSTRAND CROSS-LINKING"
+}
+]

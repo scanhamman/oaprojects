@@ -2,19 +2,42 @@ package dbrepo
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "WinterIsComing!"
-	dbname   = "context"
+var (
+	settings string // string for relative path of settings file
 )
+
+func init() {
+	settings = "./packages/dbrepo/db_settings.json"
+}
+
+type Credentials struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
+func GetConnectionString(db_name string) string {
+
+	content, err := os.ReadFile(settings)
+	if err != nil {
+		os.Exit(1)
+	}
+	var c Credentials
+	err = json.Unmarshal(content, &c)
+	if err != nil {
+		os.Exit(1)
+	}
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		c.Host, c.Port, c.User, c.Password, db_name)
+}
 
 func ProcessProjectData(dp Project,
 	dfs []Funding,
@@ -22,8 +45,7 @@ func ProcessProjectData(dp Project,
 	dss []PSubject) {
 
 	// connection string
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	psqlconn := GetConnectionString("context")
 
 	// open database
 	db, err := sql.Open("postgres", psqlconn)
@@ -95,8 +117,7 @@ func ProcessProjectData(dp Project,
 func GetMaxPiD() uint64 {
 
 	// connection string
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	psqlconn := GetConnectionString("context")
 
 	// open database
 	db, err := sql.Open("postgres", psqlconn)
@@ -136,8 +157,7 @@ func GetMaxPiD() uint64 {
 func TruncateTables() {
 
 	// connection string
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	psqlconn := GetConnectionString("context")
 
 	// open database
 	db, err := sql.Open("postgres", psqlconn)

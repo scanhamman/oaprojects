@@ -8,7 +8,7 @@
 # Test binary, built with `go test -c`
 *.test
 
-# data files
+# data and configuration files
 *.json
 *.txt
 

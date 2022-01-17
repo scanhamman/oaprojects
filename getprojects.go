@@ -78,7 +78,7 @@ func main() {
 				}
 			}
 
-			if summary != "" {
+			if !ProjectOfInterest && summary != "" {
 				if (strings.Contains(summary, "clinical") || strings.Contains(summary, "health") ||
 					strings.Contains(summary, "hospital")) &&
 					(strings.Contains(summary, "trial") || strings.Contains(summary, "study")) {

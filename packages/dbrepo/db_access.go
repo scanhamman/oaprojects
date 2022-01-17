@@ -45,9 +45,9 @@ func ProcessProjectData(dp Project,
 	StoreH2020sSQL := `insert into openaire.projecth2020s (projectid, code, description) values($1, $2, $3)`
 	StoreSubjectsSQL := `insert into openaire.projectsubjects (projectid, subject) values($1, $2)`
 
-	if dp.Projectid < 100020 {
-		fmt.Printf("%+v\n\n", dp) // for testing
-	}
+	//if dp.Projectid < 100020 {
+	//	fmt.Printf("%+v\n\n", dp) // for testing
+	//}
 
 	_, err = db.Exec(StoreProjectsSQL, dp.Projectid, dp.OAID, dp.Title, dp.Acronym, dp.Summary,
 		dp.Keywords, dp.Websiteurl, dp.Callidentifier, dp.Code, dp.Startdate, dp.Enddate,

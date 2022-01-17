@@ -8,7 +8,7 @@ type Project struct {
 	Code                             *string  `json:"code"`
 	Enddate                          *string  `json:"enddate"`
 	Funding                          []Fund   `json:"funding"`
-	Granted                          Grant    `json:"granted,omitempty"`
+	Granted                          Grant    `json:"granted"`
 	H2020Programme                   []H2020  `json:"h2020programme"`
 	ID                               *string  `json:"id"`
 	Openaccessmandatefordataset      *bool    `json:"openaccessmandatefordataset"`
@@ -17,7 +17,7 @@ type Project struct {
 	Subject                          []string `json:"subject"`
 	Summary                          *string  `json:"summary"`
 	Title                            *string  `json:"title"`
-	Keywords                         *string  `json:"keywords,omitempty"`
+	Keywords                         *string  `json:"keywords"`
 	Websiteurl                       *string  `json:"websiteurl"`
 }
 

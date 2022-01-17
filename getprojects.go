@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
+	"strings"
 
 	"github.com/scanhamman/oaprojects/packages/dbrepo"
 	"github.com/scanhamman/oaprojects/packages/jsonfile"
@@ -30,96 +31,84 @@ func main() {
 	}
 	defer file.Close()
 
-	// Read in json file and decode to defined structures.
-	var foundProjects jsonfile.Projects
-	if err := json.NewDecoder(file).Decode(&foundProjects); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// for now...
+	//dbrepo.TruncateTables() // first file in sequence only
 
-	// Obtain listed id for each trial
-	// and add to a slice of strings.
-	var pid uint64 = 0
+	// use scanner to take each line at a time
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
 
-	for _, t := range foundProjects {
+	// get current max value of the project id inthe database
+	pid := dbrepo.GetMaxPiD()
 
-		fmt.Printf("%+v\n\n", t)
+	for scanner.Scan() {
+		projectLine := scanner.Text()
+		if projectLine != "" {
+			reader := strings.NewReader(string(projectLine))
+			var fp jsonfile.Project
+			if err := json.NewDecoder(reader).Decode(&fp); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 
-		pid++
-		dp := dbrepo.Project{Projectid: pid}
-		dp.Code = GetStringValue(t.Code)
-		dp.OAID = GetStringValue(t.ID)
-		dp.Title = GetStringValue(t.Title)
-		dp.Acronym = GetStringValue(t.Acronym)
-		dp.Summary = GetStringValue(t.Summary)
-		dp.Keywords = GetStringValue(t.Keywords)
-		dp.Websiteurl = GetStringValue(t.Websiteurl)
-		dp.Callidentifier = GetStringValue(t.Callidentifier)
-		dp.Code = GetStringValue(t.Code)
-		dp.Startdate = GetStringValue(t.Startdate)
-		dp.Enddate = GetStringValue(t.Enddate)
-		dp.GrantedCurr = GetStringValue(t.Granted.Currency)
-		dp.GrantedAmount = GetFloatValue(t.Granted.Fundedamount)
-		dp.GrantedTotCost = GetFloatValue(t.Granted.Totalcost)
-		dp.Openaccessdataset = GetBoolValue(t.Openaccessmandatefordataset)
-		dp.Openaccesspubs = GetBoolValue(t.Openaccessmandateforpublications)
-		fmt.Printf("%+v\n\n", dp)
+			var title, summary string
+			// see if object contains the words 'clinical' or 'health' or 'hospital' or 'care',
+			// and 'trial' or 'study' in their title or summary...
 
-		if len(t.Funding) > 0 {
-			for _, f := range t.Funding {
-				df := dbrepo.Funding{Projectid: pid}
-				df.Description = GetStringValue(f.FundingStream.Description)
-				df.StreamID = GetStringValue(f.FundingStream.ID)
-				df.Name = GetStringValue(f.Name)
-				df.ShortName = GetStringValue(f.ShortName)
-				df.Jurisdiction = GetStringValue(f.Jurisdiction)
-				fmt.Printf("%+v\n\n", df)
+			ptitle := dbrepo.GetStringValue(fp.Title)
+			if ptitle != "null" {
+				title = strings.ToLower(ptitle)
+			} else {
+				title = ""
+			}
+
+			psummary := dbrepo.GetStringValue(fp.Summary)
+			if psummary != "null" {
+				summary = strings.ToLower(psummary)
+			} else {
+				summary = ""
+			}
+
+			ProjectOfInterest := false
+			if title != "" {
+				if (strings.Contains(title, "clinical") || strings.Contains(title, "health") ||
+					strings.Contains(title, "hospital")) &&
+					(strings.Contains(title, "trial") || strings.Contains(title, "study")) {
+					ProjectOfInterest = true
+				}
+			}
+
+			if summary != "" {
+				if (strings.Contains(summary, "clinical") || strings.Contains(summary, "health") ||
+					strings.Contains(summary, "hospital")) &&
+					(strings.Contains(summary, "trial") || strings.Contains(summary, "study")) {
+					ProjectOfInterest = true
+				}
+			}
+
+			// if so get further details and store
+			//ProjectOfInterest = true
+
+			if ProjectOfInterest {
+				pid++
+				dp := dbrepo.DeriveDBProject(pid, fp)
+
+				var dfs []dbrepo.Funding = nil
+				var dhs []dbrepo.H2020 = nil
+				var dss []dbrepo.PSubject = nil
+
+				if len(fp.Funding) > 0 {
+					dfs = dbrepo.DeriveDBFundings(pid, fp.Funding)
+				}
+				if len(fp.H2020Programme) > 0 {
+					dhs = dbrepo.DeriveDBH2020(pid, fp.H2020Programme)
+				}
+				if len(fp.Subject) > 0 {
+					dss = dbrepo.DeriveDBSubjects(pid, fp.Subject)
+				}
+				dbrepo.ProcessProjectData(dp, dfs, dhs, dss)
 			}
 		}
 
-		if len(t.H2020Programme) > 0 {
-			for _, h := range t.H2020Programme {
-				dh := dbrepo.H2020{Projectid: pid}
-				dh.Code = GetStringValue(h.Code)
-				dh.Description = GetStringValue(h.Description)
-				fmt.Printf("%+v\n\n", dh)
-			}
-		}
-
-		if len(t.Subject) > 0 {
-			for _, s := range t.Subject {
-				ds := dbrepo.Subject{Projectid: pid}
-				ds.Subject = s
-				fmt.Printf("%+v\n\n", ds)
-			}
-		}
-	}
-}
-
-func GetStringValue(fieldpointer *string) string {
-	if fieldpointer == nil {
-		return "null"
-	} else {
-		return *fieldpointer
-	}
-}
-
-func GetFloatValue(fieldpointer *float64) string {
-	if fieldpointer == nil {
-		return "null"
-	} else {
-		return strconv.FormatFloat(*fieldpointer, 'f', -1, 64)
-	}
-}
-
-func GetBoolValue(fieldpointer *bool) string {
-	if fieldpointer == nil {
-		return "null"
-	} else {
-		if *fieldpointer {
-			return "true"
-		} else {
-			return "false"
-		}
 	}
 }

@@ -10,6 +10,7 @@
 
 # data files
 *.json
+*.txt
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out

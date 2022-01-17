@@ -1,5 +1,0 @@
-package jsonfile
-
-func DoNothing() {
-
-}
